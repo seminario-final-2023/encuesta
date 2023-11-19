@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Encuesta para Médicos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        input[type="button"] {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="button"]:hover {
+            background-color: #45a049;
+        }
+
+        .question {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <form id="surveyForm">
+        <h1>Encuesta para Médicos sobre la Gestión de Recetas Médicas</h1>
+
+        <!-- Detalles del Médico -->
+        <input type="text" name="nombreMedico" placeholder="Nombre del Médico (opcional)">
+        <input type="text" name="especialidad" placeholder="Especialidad Médica">
+        <input type="number" name="experiencia" placeholder="Años de experiencia">
+
+        <!-- Preguntas de la Encuesta -->
+        <div class="question">
+            <p>1. ¿Con qué frecuencia emite recetas médicas en formato papel?</p>
+            <input type="radio" name="frecuenciaRecetas" value="Varias veces al día"> Varias veces al día<br>
+            <input type="radio" name="frecuenciaRecetas" value="Diariamente"> Diariamente<br>
+            <input type="radio" name="frecuenciaRecetas" value="Semanalmente"> Semanalmente<br>
+            <input type="radio" name="frecuenciaRecetas" value="Mensualmente"> Mensualmente<br>
+            <input type="radio" name="frecuenciaRecetas" value="Raramente"> Raramente<br>
+        </div>
+
+        <div class="question">
+            <p>2. ¿Cuáles son los principales desafíos que enfrenta al emitir recetas médicas en papel?</p>
+            <input type="checkbox" name="desafios" value="Falta de seguridad"> Falta de seguridad<br>
+            <input type="checkbox" name="desafios" value="Riesgo de pérdida o deterioro"> Riesgo de pérdida o deterioro<br>
+            <input type="checkbox" name="desafios" value="Dificultad en la trazabilidad"> Dificultad en la trazabilidad<br>
+            <input type="checkbox" name="desafios" value="Ineficiencia en el tiempo"> Ineficiencia en el tiempo<br>
+            <input type="text" name="desafiosOtro" placeholder="Otro">
+        </div>
+
+        <div class="question">
+            <p>3. ¿Ha tenido experiencias con recetas médicas digitales?</p>
+            <input type="radio" name="experienciaDigital" value="Sí"> Sí<br>
+            <input type="radio" name="experienciaDigital" value="No"> No<br>
+        </div>
+
+        <div class="question">
+            <p>4. Si respondió 'Sí' a la pregunta anterior, ¿qué ventajas ha encontrado en las recetas digitales?</p>
+            <textarea name="ventajasDigitales"></textarea>
+        </div>
+
+        <div class="question">
+            <p>5. En su opinión, ¿qué impacto tendría la implementación de un sistema de recetas digitales con tecnología blockchain y OCR en su práctica médica?</p>
+            <input type="radio" name="impactoBlockchain" value="Muy positivo"> Muy positivo<br>
+            <input type="radio" name="impactoBlockchain" value="Positivo"> Positivo<br>
+            <input type="radio" name="impactoBlockchain" value="Neutral"> Neutral<br>
+            <input type="radio" name="impactoBlockchain" value="Negativo"> Negativo<br>
+            <input type="radio" name="impactoBlockchain" value="Muy negativo"> Muy negativo<br>
+        </div>
+
+        <div class="question">
+            <p>6. ¿Considera importante la verificación de identidad del paciente y del médico en el proceso de prescripción de medicamentos?</p>
+            <input type="radio" name="verificacionIdentidad" value="Sí"> Sí<br>
+            <input type="radio" name="verificacionIdentidad" value="No"> No<br>
+        </div>
+
+        <div class="question">
+            <p>7. ¿Qué características considera esenciales para un sistema de recetas médicas digitales?</p>
+            <input type="checkbox" name="caracteristicas" value="Facilidad de uso"> Facilidad de uso<br>
+            <input type="checkbox" name="caracteristicas" value="Seguridad de los datos"> Seguridad de los datos<br>
+            <input type="checkbox" name="caracteristicas" value="Integración con otros sistemas de salud"> Integración con otros sistemas de salud<br>
+            <input type="checkbox" name="caracteristicas" value="Accesibilidad móvil"> Accesibilidad móvil<br>
+            <input type="text" name="caracteristicasOtras" placeholder="Otras">
+        </div>
+
+        <div class="question">
+            <p>8. Comentarios adicionales sobre la gestión de recetas médicas:</p>
+            <textarea name="comentariosAdicionales"></textarea>
+        </div>
+
+        <input type="button" value="Responder Encuesta" onclick="generatePDF()">
+    </form>
+
+    <script>
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            let form = document.getElementById('surveyForm');
+            let formData = new FormData(form);
+
+            // Agregar los datos del formulario al PDF
+            // Ejemplo: doc.text('Nombre del Médico: ' + formData.get('nombreMedico'), 10, 10);
+
+            // Incluir el resto de las respuestas aquí
+
+            doc.save('Encuesta_Medicos.pdf');
+        }
+    </script>
+</body>
+</html>
+
